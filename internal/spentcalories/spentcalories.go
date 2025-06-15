@@ -21,30 +21,30 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	sliceData := strings.Split(data, ",")
 
 	// Проверяем на целостность получаемой строки
-	if len(sliceData) > 3 {
-		return 0, "", 0, nil
+	if len(sliceData) != 3 {
+		return 0, "", 0, fmt.Errorf("ошибка")
 	}
 
 	// Преобразовываем первое значение в слайсе в тип int и проверяем на отсутствие шагов
 	steps, err := strconv.Atoi(sliceData[0])
 	if err != nil {
-		return 0, "", 0, nil
+		return 0, "", 0, fmt.Errorf("ошибка")
 	}
 	if steps == 0 {
-		return 0, "", 0, nil
+		return 0, "", 0, fmt.Errorf("ошибка")
 	}
 
 	// Преобразовываем третье значение в слайсе в тип time.Duration
 	duration, err := time.ParseDuration(sliceData[2])
 	if err != nil {
-		return 0, "", 0, nil
+		return 0, "", 0, fmt.Errorf("ошибка")
 	}
 
 	switch {
 	case steps <= 0:
-		return 0, "", 0, nil
+		return 0, "", 0, fmt.Errorf("ошибка")
 	case duration <= 0:
-		return 0, "", 0, nil
+		return 0, "", 0, fmt.Errorf("ошибка")
 	}
 
 	return steps, sliceData[1], duration, nil
@@ -76,7 +76,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	// Разбиваем получаемую строку data, пример ввода - "3456,Ходьба,3h00m"
 	steps, trainingType, duration, err := parseTraining(data)
 	if err != nil {
-		return "", nil
+		return "", fmt.Errorf("ошибка")
 	}
 
 	// Получаем значения пройденной дистанции и средней скорости
@@ -119,6 +119,8 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 		return 0, fmt.Errorf("ошибка ввода веса")
 	case height <= 0:
 		return 0, fmt.Errorf("ошибка ввода роста")
+	case duration <= 0:
+		return 0, fmt.Errorf("ошибка времени")
 	}
 
 	// Рассчет средней скорости
@@ -135,11 +137,11 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	// Проверяем корректность вводимых данных
 	switch  {
 	case steps <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка")
 	case weight <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка")
 	case height <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка")
 	}
 
 	// Рассчет средней скорости
