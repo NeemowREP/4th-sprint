@@ -40,6 +40,13 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 		return 0, "", 0, nil
 	}
 
+	switch {
+	case steps <= 0:
+		return 0, "", 0, nil
+	case duration <= 0:
+		return 0, "", 0, nil
+	}
+
 	return steps, sliceData[1], duration, nil
 }
 
