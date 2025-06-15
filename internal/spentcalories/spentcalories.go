@@ -22,22 +22,22 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 
 	// Проверяем на целостность получаемой строки
 	if len(sliceData) < 3 {
-		return 0, "", 0, fmt.Errorf("ошибка, данные отсутствуют")
+		return 0, "", 0, nil
 	}
 
 	// Преобразовываем первое значение в слайсе в тип int и проверяем на отсутствие шагов
 	steps, err := strconv.Atoi(sliceData[0])
 	if err != nil {
-		return 0, "", 0, fmt.Errorf("ошибка, преобразование кол-ва шагов невозможно")
+		return 0, "", 0, nil
 	}
 	if steps == 0 {
-		return 0, "", 0, fmt.Errorf("встань с дивана")
+		return 0, "", 0, nil
 	}
 
 	// Преобразовываем третье значение в слайсе в тип time.Duration
 	duration, err := time.ParseDuration(sliceData[2])
 	if err != nil {
-		return 0, "", 0, fmt.Errorf("ошибка преобразования времени")
+		return 0, "", 0, nil
 	}
 
 	return steps, sliceData[1], duration, nil
@@ -69,7 +69,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	// Разбиваем получаемую строку data, пример ввода - "3456,Ходьба,3h00m"
 	steps, trainingType, duration, err := parseTraining(data)
 	if err != nil {
-		return "", fmt.Errorf("ошибка вводных данных")
+		return "", nil
 	}
 
 	// Получаем значения пройденной дистанции и средней скорости
@@ -95,9 +95,13 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	}
 
 	dur := duration.Hours()
+	durStr := fmt.Sprintf("%.2f ч.", dur)
+    if dur == float64(int(dur)) {
+        durStr = fmt.Sprintf("%d ч.", int(dur))
+    }
 
-	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %v ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
-trainingType, dur, dist, speed, calories)
+	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %s ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
+trainingType, durStr, dist, speed, calories)
 
 return info, nil
 }
@@ -107,11 +111,11 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	// Проверяем корректность вводимых данных
 	switch  {
 	case steps <= 0:
-		return 0, fmt.Errorf("ошибка, введите корректное значение пройденных шагов")
+		return 0, nil
 	case weight <= 0:
-		return 0, fmt.Errorf("ошибка, Введите корректное значение вашего веса")
+		return 0, nil
 	case height <= 0:
-		return 0, fmt.Errorf("ошибка, введите корректное значение вашего роста")
+		return 0, nil
 	}
 
 	// Рассчет средней скорости
@@ -128,11 +132,11 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	// Проверяем корректность вводимых данных
 	switch  {
 	case steps <= 0:
-		return 0, fmt.Errorf("ошибка, Введите корректное значение пройденных шагов")
+		return 0, nil
 	case weight <= 0:
-		return 0, fmt.Errorf("ошибка, Введите корректное значение вашего веса")
+		return 0, nil
 	case height <= 0:
-		return 0, fmt.Errorf("ошибка, Введите корректное значение вашего роста")
+		return 0, nil
 	}
 
 	// Рассчет средней скорости

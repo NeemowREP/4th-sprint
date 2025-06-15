@@ -22,22 +22,22 @@ func parsePackage(data string) (int, time.Duration, error) {
 
 	// Проверяем на целостность получаемой строки
 	if len(sliceData) < 2 {
-		return 0, 0, fmt.Errorf("ошибка, Данные отсутствуют")
+		return 0, 0, nil
 	}
 
 	// Преобразовываем первое значение в слайсе в тип int и проверяем на отсутствие шагов
 	steps, err := strconv.Atoi(sliceData[0])
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка, преобразование кол-ва шагов невозможно")
+		return 0, 0, nil
 	}
 	if steps <= 0 {
-		return 0, 0, fmt.Errorf("встань с дивана")
+		return 0, 0, nil
 	}
 
 	// Преобразовываем второе значение в слайсе в тип time.Duration
 	duration, err := time.ParseDuration(sliceData[1])
 	if err != nil {
-		return 0, 0, fmt.Errorf("ошибка преобразования времени")
+		return 0, 0, nil
 	}
 	return steps, duration, nil
 }
@@ -46,7 +46,7 @@ func DayActionInfo(data string, weight, height float64) string {
 
 	steps, duration, err := parsePackage(data)
 	if err != nil {
-		return fmt.Sprintf("Ошибка: %v", err)
+		return ""
 	}
 
 	// Если шаги отстутствуют, возвращаем пустую строку
