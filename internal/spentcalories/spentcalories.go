@@ -21,7 +21,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	sliceData := strings.Split(data, ",")
 
 	// Проверяем на целостность получаемой строки
-	if len(sliceData) < 3 {
+	if len(sliceData) > 3 {
 		return 0, "", 0, nil
 	}
 
@@ -102,27 +102,23 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	}
 
 	dur := duration.Hours()
-	durStr := fmt.Sprintf("%.2f ч.", dur)
-    if dur == float64(int(dur)) {
-        durStr = fmt.Sprintf("%d ч.", int(dur))
-    }
 
-	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %s ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
-trainingType, durStr, dist, speed, calories)
+	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
+trainingType, dur, dist, speed, calories)
 
 return info, nil
 }
 
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
 	
-	// Проверяем корректность вводимых данных
+	// Проверяем корректность вводимых данных	
 	switch  {
 	case steps <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка ввода шагов")
 	case weight <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка ввода веса")
 	case height <= 0:
-		return 0, nil
+		return 0, fmt.Errorf("ошибка ввода роста")
 	}
 
 	// Рассчет средней скорости
