@@ -1,6 +1,9 @@
 package daysteps
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -12,9 +15,50 @@ const (
 )
 
 func parsePackage(data string) (int, time.Duration, error) {
-	// TODO: реализовать функцию
+
+	// Разбиваем строку на слайс строк через разделитель ','
+	sliceData := strings.Split(data, ",")
+
+	// Проверяем на целостность получаемой строки
+	if len(sliceData) < 2 {
+		return 0, 0, fmt.Errorf("ошибка, Данные отсутствуют")
+	}
+
+	// Преобразовываем первое значение в слайсе в тип int и проверяем на отсутствие шагов
+	steps, err := strconv.Atoi(sliceData[0])
+	if err != nil {
+		return 0, 0, fmt.Errorf("ошибка, преобразование кол-ва шагов невозможно")
+	}
+	if steps <= 0 {
+		return 0, 0, fmt.Errorf("встань с дивана")
+	}
+
+	// Преобразовываем второе значение в слайсе в тип time.Duration
+	duration, err := time.ParseDuration(sliceData[1])
+	if err != nil {
+		return 0, 0, fmt.Errorf("ошибка преобразования времени")
+	}
+	return steps, duration, nil
 }
 
 func DayActionInfo(data string, weight, height float64) string {
-	// TODO: реализовать функцию
+
+	steps, duration, err := parsePackage(data)
+	if err != nil {
+		return fmt.Sprintf("Ошибка: %v", err)
+	}
+
+	// Если шаги отстутствуют, возвращаем пустую строку
+	if steps == 0 {
+		return ""
+	}
+
+	// Вычисляем дистанцию в метрах и переводим значение в километры
+	distance := (float64(steps) * stepLength) / mInKm
+
+	// Вычисляем количество калорий
+	calories := WalkingSpentCalories(steps, weight, height, duration)
+
+	return fmt.Sprintf("Количество шагов: %d.\nДистацния составила %.2f км.\nВы сожгли %.2f ккал.\n", steps, distance, calories)
+
 }
