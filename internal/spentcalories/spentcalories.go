@@ -94,8 +94,10 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 		return "", caloriesErr
 	}
 
+	dur := duration.Hours()
+
 	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %v ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
-trainingType, duration, dist, speed, calories)
+trainingType, dur, dist, speed, calories)
 
 return info, fmt.Errorf("ошибка информации о тренировке")
 }
