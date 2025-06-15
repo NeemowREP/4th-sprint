@@ -96,10 +96,10 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 
 	dur := duration.Hours()
 
-	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %v ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f",
+	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %v ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
 trainingType, dur, dist, speed, calories)
 
-return info, fmt.Errorf("ошибка информации о тренировке")
+return info, nil
 }
 
 func RunningSpentCalories(steps int, weight, height float64, duration time.Duration) (float64, error) {
