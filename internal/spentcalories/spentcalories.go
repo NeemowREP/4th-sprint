@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"errors"
 )
 
 // Основные константы, необходимые для расчетов.
@@ -22,29 +23,26 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 
 	// Проверяем на целостность получаемой строки
 	if len(sliceData) != 3 {
-		return 0, "", 0, fmt.Errorf("ошибка")
+		return 0, "", 0, errors.New("incorrect number of elements")
 	}
 
 	// Преобразовываем первое значение в слайсе в тип int и проверяем на отсутствие шагов
 	steps, err := strconv.Atoi(sliceData[0])
 	if err != nil {
-		return 0, "", 0, fmt.Errorf("ошибка")
+		return 0, "", 0, err
 	}
 	if steps == 0 {
-		return 0, "", 0, fmt.Errorf("ошибка")
+		return 0, "", 0, fmt.Errorf("invalid steps value: %d (must be positive)", steps)
 	}
 
 	// Преобразовываем третье значение в слайсе в тип time.Duration
 	duration, err := time.ParseDuration(sliceData[2])
 	if err != nil {
-		return 0, "", 0, fmt.Errorf("ошибка")
+		return 0, "", 0, err
 	}
 
-	switch {
-	case steps <= 0:
-		return 0, "", 0, fmt.Errorf("ошибка")
-	case duration <= 0:
-		return 0, "", 0, fmt.Errorf("ошибка")
+	if duration <= 0 {
+		return 0, "", 0, fmt.Errorf("invalid duration value: %v (must be positive)", duration)
 	}
 
 	return steps, sliceData[1], duration, nil
@@ -76,7 +74,7 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 	// Разбиваем получаемую строку data, пример ввода - "3456,Ходьба,3h00m"
 	steps, trainingType, duration, err := parseTraining(data)
 	if err != nil {
-		return "", fmt.Errorf("ошибка")
+		return "", err
 	}
 
 	// Получаем значения пройденной дистанции и средней скорости
@@ -85,20 +83,22 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 
 	// Объявляем две переменные для корректной работы switch case
 	var calories float64
-	var caloriesErr error
 
 	// Проверяем тип тренировки
 	switch trainingType {
 	case "Бег":
-		calories, caloriesErr = RunningSpentCalories(steps, weight, height, duration)
+		calories, err = RunningSpentCalories(steps, weight, height, duration)
+		if err != nil {
+			return "", err
+		}
+	
 	case "Ходьба":
-		calories, caloriesErr = WalkingSpentCalories(steps, weight, height, duration)
+		calories, err = WalkingSpentCalories(steps, weight, height, duration)
+		if err != nil {
+			return "", err
+		}	
 	default:
-		return "", fmt.Errorf("неизвестный тип тренировки")
-	}
-
-	if caloriesErr != nil {
-		return "", caloriesErr
+		return "", errors.New("unknown type of training")
 	}
 
 	dur := duration.Hours()
@@ -114,13 +114,13 @@ func RunningSpentCalories(steps int, weight, height float64, duration time.Durat
 	// Проверяем корректность вводимых данных	
 	switch  {
 	case steps <= 0:
-		return 0, fmt.Errorf("ошибка ввода шагов")
+		return 0, fmt.Errorf("invalid steps input: %d (must be positive)", steps)
 	case weight <= 0:
-		return 0, fmt.Errorf("ошибка ввода веса")
+		return 0, fmt.Errorf("invalid weight input: %.2f (must be positive)", weight)
 	case height <= 0:
-		return 0, fmt.Errorf("ошибка ввода роста")
+		return 0, fmt.Errorf("invalid height input: %.2f (must be positive)", height)
 	case duration <= 0:
-		return 0, fmt.Errorf("ошибка времени")
+		return 0, fmt.Errorf("invalid duration input: %v (must be positive)", duration)
 	}
 
 	// Рассчет средней скорости
@@ -137,11 +137,11 @@ func WalkingSpentCalories(steps int, weight, height float64, duration time.Durat
 	// Проверяем корректность вводимых данных
 	switch  {
 	case steps <= 0:
-		return 0, fmt.Errorf("ошибка")
+		return 0, fmt.Errorf("invalid steps input: %d (must be positive)", steps)
 	case weight <= 0:
-		return 0, fmt.Errorf("ошибка")
+		return 0, fmt.Errorf("invalid weight input: %.2f (must be positive)", weight)
 	case height <= 0:
-		return 0, fmt.Errorf("ошибка")
+		return 0, fmt.Errorf("invalid height input: %.2f (must be positive)", height)
 	}
 
 	// Рассчет средней скорости
