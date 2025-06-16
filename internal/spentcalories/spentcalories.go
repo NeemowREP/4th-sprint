@@ -31,7 +31,7 @@ func parseTraining(data string) (int, string, time.Duration, error) {
 	if err != nil {
 		return 0, "", 0, err
 	}
-	if steps == 0 {
+	if steps <= 0 {
 		return 0, "", 0, fmt.Errorf("invalid steps value: %d (must be positive)", steps)
 	}
 
@@ -98,9 +98,8 @@ func TrainingInfo(data string, weight, height float64) (string, error) {
 			return "", err
 		}	
 	default:
-		return "", errors.New("unknown type of training")
+		return "", errors.New("неизвестный тип тренировки")
 	}
-
 	dur := duration.Hours()
 
 	info := fmt.Sprintf("Тип тренировки: %s\nДлительность: %.2f ч.\nДистанция: %.2f км.\nСкорость: %.2f км/ч\nСожгли калорий: %.2f\n",
